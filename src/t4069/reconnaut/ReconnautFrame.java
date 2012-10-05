@@ -1,4 +1,3 @@
-
 package t4069.reconnaut;
 
 import java.awt.EventQueue;
@@ -17,8 +16,7 @@ import javax.swing.border.EmptyBorder;
 
 public class ReconnautFrame extends JFrame {
 
-	private final HashMap<String, HashMap<String, HashMap<String, HashMap<String, Object>>>> entryMap =
-			new HashMap<String, HashMap<String, HashMap<String, HashMap<String, Object>>>>();
+	private final HashMap<String, HashMap<String, HashMap<String, HashMap<String, Object>>>> entryMap = new HashMap<String, HashMap<String, HashMap<String, HashMap<String, Object>>>>();
 	private static final long serialVersionUID = -4388059251901151481L;
 
 	/**
@@ -82,21 +80,38 @@ public class ReconnautFrame extends JFrame {
 		timeBox.setEditable(true);
 		timeBox.setBounds(519, 7, 86, 24);
 		contentPane.add(timeBox);
-		ItemListener dateListener = new ItemListener() {
+		ActionListener dateListener = new ActionListener() {
 
 			@Override
-			public void itemStateChanged(ItemEvent arg0) {
-				numberBox.setSelectedItem(arg0.getItem());
-				if (entryMap.get(arg0.getItem().toString()) != null) {
+			public void actionPerformed(ActionEvent arg0) {
+				dateBox.removeAllItems();
+				timeBox.removeAllItems();
+				numberBox.setSelectedItem(numberBox.getSelectedItem());
+				if (entryMap.get(numberBox.getSelectedItem().toString()) != null) {
 					dateBox.removeAllItems();
-					for (String s : entryMap
-							.get(arg0.getItem().toString()).keySet()) {
+					for (String s : entryMap.get(
+							numberBox.getSelectedItem().toString()).keySet()) {
 						dateBox.addItem(s);
 					}
 				}
 			}
 		};
-		numberBox.addItemListener(dateListener);
+		ActionListener timeListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timeBox.removeAllItems();
+				if (entryMap.get(numberBox.getSelectedItem().toString()) != null
+						&& entryMap.get(numberBox.getSelectedItem().toString())
+								.get(dateBox.getSelectedItem().toString()) == null) {
+					for (String s : entryMap
+							.get(numberBox.getSelectedItem().toString())
+							.get(dateBox.getSelectedItem().toString()).keySet()) {
+						timeBox.addItem(s);
+					}
+				}
+			}};
+		numberBox.addActionListener(dateListener);
 
 		JButton btnSave = new JButton("Save");
 		btnSave.setBounds(190, 329, 117, 23);
@@ -143,7 +158,8 @@ public class ReconnautFrame extends JFrame {
 					new HashMap<String, HashMap<String, Object>>());
 			dateBox.addItem(date);
 		}
-		String time = timeBox.getSelectedItem().toString().trim();
+		String time = (timeBox.getSelectedItem() == null) ? "" : timeBox
+				.getSelectedItem().toString().trim();
 		if (entryMap.get(number).get(date).get(time) == null) {
 			entryMap.get(number).get(date)
 					.put(time, new HashMap<String, Object>());
